@@ -1,2 +1,4 @@
 Some plugins for kupfer that for one reason or another don't belong in the
 main release
+
+These plugins can be installed into ~/.local/share/kupfer/plugins
