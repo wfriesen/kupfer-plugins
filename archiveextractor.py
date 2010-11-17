@@ -15,6 +15,7 @@ from kupfer.objects import Action, FileLeaf
 from kupfer import pretty
 from kupfer import task, uiutils
 from kupfer import plugin_support
+import rarfile
 
 class UnpackTask(task.ThreadTask):
 	def __init__(self, archive_name, extract_path):
@@ -28,6 +29,8 @@ class UnpackTask(task.ThreadTask):
 			open_func = zipfile.ZipFile
 		elif tarfile.is_tarfile(self.archive_name):
 			open_func = tarfile.open
+		elif rarfile.is_rarfile(self.archive_name):
+			open_func = rarfile.RarFile
 		else:
 			self.error = "Bad archive: %s" % self.archive_name
 			return
@@ -64,8 +67,10 @@ class UnpackTo (Action):
 		yield FileLeaf
 
 	def valid_for_item(self, item):
-		return (zipfile.is_zipfile(item.object) or
-			tarfile.is_tarfile(item.object))
+		if not os.path.isdir(item.object):
+			return (zipfile.is_zipfile(item.object) or
+				tarfile.is_tarfile(item.object) or
+				rarfile.is_rarfile(item.object))
 
 	def requires_object(self):
 		return True
