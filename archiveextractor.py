@@ -57,6 +57,8 @@ class UnpackTo (Action):
 		# Set standard way to access different archive types
 		tarfile.TarFile.namelist = tarfile.TarFile.getnames
 
+		self.extensions = set((".zip", ".gz", ".bz2", ".rar"))
+
 	def is_async(self):
 		return True
 
@@ -68,9 +70,8 @@ class UnpackTo (Action):
 
 	def valid_for_item(self, item):
 		if not os.path.isdir(item.object):
-			return (zipfile.is_zipfile(item.object) or
-				tarfile.is_tarfile(item.object) or
-				rarfile.is_rarfile(item.object))
+			root, ext = os.path.splitext(item.object)
+			return ext.lower() in self.extensions
 
 	def requires_object(self):
 		return True
